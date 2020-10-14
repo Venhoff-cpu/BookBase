@@ -35,29 +35,38 @@ def ISBN_validator(raw_isbn):
 class Book(models.Model):
     author = models.CharField(
         max_length=200,
-        blank=True,
         verbose_name=_("author"),)
     title = models.CharField(
         max_length=200,
-        blank=True,
         verbose_name=_("title"),)
     publication_date = models.DateField(
         validators=[future_date],
-        verbose_name=_('Publication date'))
+        verbose_name=_('Publication date'),)
     isbn = models.CharField(
         max_length=17,
-        unique=True,
         validators=[ISBN_validator],
         verbose_name=_('ISBN'),)
     page_num = models.IntegerField(
-        max_length=1000,
-        validators=[MinValueValidator(limit_value=1, message='Liczba stron nie może byc równa lub mniejsza od 0')])
+        validators=[
+            MinValueValidator(limit_value=1, message='Liczba stron nie może byc równa lub mniejsza od 0'),
+            MaxValueValidator(limit_value=1000)])
     link_to_cover = models.URLField(
         max_length=200,
         unique=True,
         blank=True,
         verbose_name=_('Link to book cover')
     )
+    book_language = models.CharField(
+        max_length=200,
+        help_text='Prosze podać język w jakim napisana jest książka.')
 
     def __str__(self):
         return f'{self.author} "{self.title}"'
+
+    class Meta:
+        verbose_name = "Ksiąźka"
+        verbose_name_plural = "Ksiąźki"
+        ordering = [
+            "title",
+            "publication_date",
+        ]

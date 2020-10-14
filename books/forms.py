@@ -10,6 +10,7 @@ class BookAddForm(ModelForm):
 
     class Meta:
         model = Book
+        fields = '__all__'
 
 
 class BookSearchForm(forms.Form):

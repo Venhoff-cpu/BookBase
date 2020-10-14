@@ -1,10 +1,48 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'base.html' %}
+{% block title %}Homepage{% endblock %}
 
-</body>
-</html>
+{% block content %}
+    <table>
+        <thead>
+            <tr>
+                <td>Tytuł</td>
+                <td>Autor</td>
+                <td>Numer ISBN</td>
+                <td>Data publikacji</td>
+                <td>Liczba stron</td>
+                <td>Okładka (link)</td>
+                <td>Język książki</td>
+                <td>Akcje</td>
+            </tr>
+        </thead>
+        <tbody>
+        {% for book in book_list %}
+            <tr>
+                <td>{{ book.title }}</td>
+                <td>{{ book.author }}</td>
+                <td>{{ book.isbn }}</td>
+                <td>{{ book.publication_date }}</td>
+                <td>{{ book.page_num }}</td>
+                <td><a href="{{ book.link_to_cover }}">link</a></td>
+                <td>{{ book.book_language }}</td>
+                <td><a href="{% url 'book-edit' pk=book.id %}">Edytuj wpis</a></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% if is_paginated %}
+        <div class="pagination">
+            <span class="page-links">
+                {% if page_obj.has_previous %}
+                    <a href="/?page={{ page_obj.previous_page_number }}">previous</a>
+                {% endif %}
+                <span class="page-current">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                </span>
+                {% if page_obj.has_next %}
+                    <a href="/?page={{ page_obj.next_page_number }}">next</a>
+                {% endif %}
+            </span>
+        </div>
+    {% endif %}
+{% endblock %}
