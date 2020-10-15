@@ -6,12 +6,12 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
 
 
-def today_date():
-    return timezone.now().date()
+def current_year():
+    return timezone.now().year
 
 
 future_date = MaxValueValidator(
-    limit_value=today_date(),
+    limit_value=current_year(),
     message="Książka nie może być z przyszłości.",
 )
 
@@ -22,6 +22,9 @@ def ISBN_validator(raw_isbn):
 
     if not isinstance(isbn_to_check, str):
         raise ValidationError(_(u'Invalid ISBN: Not a string'))
+
+    if isbn_to_check == 'Inny rodzaj identyfikatora':
+        return True
 
     if len(isbn_to_check) != 10 and len(isbn_to_check) != 13:
         raise ValidationError(_(u'Invalid ISBN: Wrong length'))
@@ -39,11 +42,11 @@ class Book(models.Model):
     title = models.CharField(
         max_length=200,
         verbose_name=_("title"),)
-    publication_date = models.DateField(
-        validators=[future_date],
+    publication_date = models.IntegerField(
+        validators=[MaxValueValidator(current_year())],
         verbose_name=_('Publication date'),)
     isbn = models.CharField(
-        max_length=17,
+        max_length=256,
         validators=[ISBN_validator],
         verbose_name=_('ISBN'),)
     page_num = models.IntegerField(
@@ -51,7 +54,6 @@ class Book(models.Model):
             MinValueValidator(limit_value=1, message='Liczba stron nie może byc równa lub mniejsza od 0'),
             MaxValueValidator(limit_value=1000)])
     link_to_cover = models.URLField(
-        max_length=200,
         unique=True,
         blank=True,
         verbose_name=_('Link to book cover')

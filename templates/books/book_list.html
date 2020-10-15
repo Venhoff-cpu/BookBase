@@ -2,7 +2,14 @@
 {% block title %}Homepage{% endblock %}
 
 {% block content %}
-    <table>
+
+    <h2>Baza książek</h2>
+    <h3>Formularz wyszukiwania</h3>
+    <form method="GET">
+        {{ form.as_table }}
+        <input type="submit" value="Wyszukaj">
+    </form>
+    <table class="table">
         <thead>
             <tr>
                 <td>Tytuł</td>
