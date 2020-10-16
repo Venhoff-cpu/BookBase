@@ -43,6 +43,7 @@ class Book(models.Model):
         max_length=200,
         verbose_name=_("title"),)
     publication_date = models.IntegerField(
+        blank=True,
         validators=[MaxValueValidator(current_year())],
         verbose_name=_('Publication date'),)
     isbn = models.CharField(
@@ -54,7 +55,6 @@ class Book(models.Model):
             MinValueValidator(limit_value=1, message='Liczba stron nie może byc równa lub mniejsza od 0'),
             MaxValueValidator(limit_value=1000)])
     link_to_cover = models.URLField(
-        unique=True,
         blank=True,
         verbose_name=_('Link to book cover')
     )
