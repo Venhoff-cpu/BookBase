@@ -56,11 +56,12 @@ class Book(models.Model):
             MaxValueValidator(limit_value=1000)])
     link_to_cover = models.URLField(
         blank=True,
-        verbose_name=_('Link to book cover')
+        verbose_name=_('Link to book cover'),
+        help_text='Pełny link zaczynający się od http:// lub https://',
     )
     book_language = models.CharField(
         max_length=200,
-        help_text='Prosze podać język w jakim napisana jest książka.')
+        help_text='Prosze podać skrót (zgodnie z ISO) języka w jakim napisana jest książka.')
 
     def __str__(self):
         return f'{self.author} "{self.title}"'

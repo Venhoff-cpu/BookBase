@@ -5,8 +5,12 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, FormView, View, UpdateView, TemplateView
 from django.contrib import messages
 
+from rest_framework.generics import ListAPIView
+
+from .serializers import BookSerializer
 from .models import Book
 from .forms import BookAddForm, GoogleBooksForm, BookSearchForm
+from .filters import BookApiFilter
 from .api_procesor import fetch_book_data
 
 
@@ -104,3 +108,9 @@ class BookGoogleImportView(FormView):
         messages.info(self.request, f"Pobrano {valid} pozycji do bazy danych.")
 
         return redirect('book-list')
+
+
+class BookApiListView(ListAPIView):
+    serializer_class = BookSerializer
+    queryset = Book.objects.all()
+    filterset_class = BookApiFilter
