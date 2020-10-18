@@ -1,9 +1,14 @@
 {% extends 'base.html' %}
 
+{% load crispy_forms_tags %}
+
+{% block title %}Add book{% endblock %}
+
 {% block content %}
+<h3>Formularz importowania książek z google API</h3>
 <form method="POST">
     {% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="Wyszukaj i wgraj do bazy">
+    {{ form|crispy }}
+    <input type="submit" class="btn btn-success value="Wyszukaj i wgraj do bazy">
 </form>
 {% endblock %}

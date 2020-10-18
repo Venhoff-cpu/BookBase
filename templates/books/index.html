@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}Index{% endblock %}
+
+{% block content %}
+<div class="jumbotron">
+    <div class="container">
+        <h1 class="display-3">Witamy w bazie książek!</h1>
+        <p>Baza została zaprojektowana w ten sposób aby umożliwić importowanie książek z Google Books API
+            (maksymalnie  10 na zapytanie) oraz dodawania ich ręcznie przez stronę z formularzem.</p>
+        <p><a class="btn btn-primary btn-lg" href="{% url 'book-list' %}" role="button">Przejdź do listy książek</a></p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            <h2>Ilość książek w bazie</h2>
+            <p>Aktualnie w bazie posiadamy:</p>
+            <h3>{{ book_count }}</h3>
+            <p>Unikatowych wydań książek.</p>
+        </div>
+        <div class="col-md-4">
+            <h2>GitHub</h2>
+            <p>Ponizszy link przeniesie bezpośrednio repozytorium z kodem źródłowym.</p>
+            <p><a class="btn btn-secondary" href="https://github.com/Venhoff-cpu/BookBase" role="button">
+                Przejdź do GitHuba</a></p>
+        </div>
+        <div class="col-md-4">
+            <h2>Widok API</h2>
+            <p>Strona udostępnia RESTful API, pozwalający na pobranie listy książek ,etodą GET,
+                przy jednoczesnym filtrowaniu po parametrach.
+                Poniższy link przenosi do wizulanej reprezentacji serwisu API.</p>
+            <p><a class="btn btn-secondary" href="{% url 'book-api' %}" role="button">API View</a></p>
+        </div>
+    </div>
+
+    <hr>
+
+</div>
+{% endblock %}

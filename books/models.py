@@ -32,6 +32,9 @@ def ISBN_validator(raw_isbn):
     if isbn_to_check != isbn_to_check.upper():
         raise ValidationError(_(u'Invalid ISBN: Only upper case allowed'))
 
+    if Book.objects.filter(isbn__exact=raw_isbn):
+        raise ValidationError(_(u'Invalid ISBN: already exists'))
+
     return True
 
 
@@ -44,7 +47,7 @@ class Book(models.Model):
         verbose_name=_("title"),)
     publication_date = models.IntegerField(
         blank=True,
-        validators=[MaxValueValidator(current_year())],
+        validators=[MinValueValidator(1900), MaxValueValidator(current_year())],
         verbose_name=_('Publication date'),)
     isbn = models.CharField(
         max_length=256,
@@ -60,7 +63,7 @@ class Book(models.Model):
         help_text='Pełny link zaczynający się od http:// lub https://',
     )
     book_language = models.CharField(
-        max_length=200,
+        max_length=3,
         help_text='Prosze podać skrót (zgodnie z ISO) języka w jakim napisana jest książka.')
 
     def __str__(self):

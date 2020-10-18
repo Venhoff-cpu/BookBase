@@ -14,20 +14,26 @@ class BookAddForm(ModelForm):
 
 
 class BookSearchForm(forms.Form):
-    title = forms.CharField(max_length=200, required=False, label='Tytuł')
-    author = forms.CharField(max_length=200, required=False, label='Autor')
+    title = forms.CharField(max_length=200,required=False, label='Tytuł',
+                            widget=forms.TextInput(attrs={'placeholder': 'Tytuł książki'}))
+    author = forms.CharField(max_length=200, required=False, label='Autor',
+                             widget=forms.TextInput(attrs={'placeholder': 'Autor książki'}))
     language = forms.CharField(
         max_length=2,
         required=False,
-        label='Język',
-        help_text='Językyk prosze podać zgodnie z skrótami ISO')
-    date_from = forms.IntegerField(min_value=1900, required=False, label='Rok publikacji od:')
+        label='Język książki (skrót)',
+        widget=forms.TextInput(attrs={'placeholder': 'pl, en, de'}))
+    date_from = forms.IntegerField(
+        min_value=1900,
+        required=False,
+        label='Rok publikacji od:',
+        widget=forms.NumberInput(attrs={'placeholder': 'Rok publikacji'}))
     date_to = forms.IntegerField(
         min_value=1901,
         max_value=int(timezone.now().year),
         required=False,
-        label='Do',
-        help_text='Wartości należy podać jako rok publikacji')
+        label='do',
+        widget=forms.NumberInput(attrs={'placeholder': 'Rok publikacji'}))
 
     def clean(self):
         cleaned_data = super().clean()

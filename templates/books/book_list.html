@@ -1,26 +1,56 @@
 {% extends 'base.html' %}
+
 {% load temptag %}
+{% load crispy_forms_tags %}
+
 {% block title %}Homepage{% endblock %}
 
 {% block content %}
-
     <h2>Baza książek</h2>
-    <h3>Formularz wyszukiwania</h3>
-    <form method="GET">
-        {{ form.as_table }}
-        <input type="submit" value="Wyszukaj">
-    </form>
-    <table class="table">
-        <thead>
+    <div clsss="container-fluid" style="background-color: lightgrey">
+        <h3>Formularz wyszukiwania</h3>
+        <form method="GET">
+            <div class="form-row align-items-center">
+                <div class="col-auto">
+                    {{ form.author.label_tag }}
+                    {{ form.author}}
+                </div>
+                <div class="col-auto">
+                    {{ form.title.label_tag }}
+                    {{ form.title}}
+                </div>
+                <div class="col-auto">
+                    {{ form.language.label_tag }}
+                    {{ form.language}}
+                </div>
+            </div>
+            <div class="form-row align-items-center">
+                <div class="col-auto">
+                    {{ form.date_from.label_tag }}
+                    {{ form.date_from }}
+                </div>
+                    <div class="col-auto">
+                        {{ form.date_to.label_tag }}
+                        {{ form.date_to }}
+                    </div>
+                    <div class="col-auto">
+                        <input type="submit"  class="btn btn-primary" value="Wyszukaj">
+                    </div>
+            </div>
+        </form>
+    </div>
+    <h3 style="margin-top: 20px">Tabela książek</h3>
+    <table class="table table-bordered table-hover" style="margin-top: 20px">
+        <thead class="thead-light">
             <tr>
-                <td>Tytuł</td>
-                <td>Autor</td>
-                <td>Numer ISBN</td>
-                <td>Data publikacji</td>
-                <td>Liczba stron</td>
-                <td>Okładka (link)</td>
-                <td>Język książki</td>
-                <td>Akcje</td>
+                <th scope="col" style="width: 20%">Tytuł</th>
+                <th scope="col" style="width: 20%">Autor</th>
+                <th scope="col" style="width: 20%">Numer ISBN</th>
+                <th scope="col" style="width: 10%">Data publikacji</th>
+                <th scope="col" style="width: 10%">Liczba stron</th>
+                <th scope="col" style="width: 10%">Okładka (link)</th>
+                <th scope="col" style="width: 5%">Język książki</th>
+                <th scope="col" style="width: 5%">Akcje</th>
             </tr>
         </thead>
         <tbody>
@@ -38,23 +68,41 @@
         {% endfor %}
         </tbody>
     </table>
+    <div class="container-fluid" style="margin-top: 10px">
     {% if is_paginated %}
-        <div class="pagination">
-            <span class="page-links">
-                {% if page_obj.has_previous %}
-                    <a href="book-list/?{% paginate_url 'page' page_obj.previous_page_number request.GET.urlencode %}">
-                        Poprzednia
-                    </a>
+        <ul class="pagination mx-auto justify-content-center">
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link"
+                       href="book-list/?{% paginate_url 'page' page_obj.previous_page_number request.GET.urlencode %}">
+                        Poprzednia</a>
+                </li>
+            {% endif %}
+            {% for page_num in page_obj.paginator.page_range %}
+                {% if page_num <= page_obj.number|add:5 and page_num >= page_obj.number|add:-5 %}
+                    {% if page_num == page_obj.number %}
+                        <li class="page-item active">
+                            <a class="page-link"
+                               href="book-list/?{% paginate_url 'page' page_num request.GET.urlencode %}">
+                               {{ page_num }}</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item">
+                            <a class="page-link"
+                               href="book-list/?{% paginate_url 'page' page_num request.GET.urlencode %}">
+                                {{ page_num }}</a>
+                        </li>
+                    {% endif %}
                 {% endif %}
-                <span class="page-current">
-                    Strona {{ page_obj.number }} z {{ page_obj.paginator.num_pages }}.
-                </span>
-                {% if page_obj.has_next %}
-                    <a href="book-list/?{% paginate_url 'page' page_obj.next_page_number request.GET.urlencode %}">
-                        Następna
-                    </a>
-                {% endif %}
-            </span>
-        </div>
+            {% endfor %}
+            {% if page_obj.has_next %}
+                <li>
+                    <a class="page-link"
+                       href="book-list/?{% paginate_url 'page' page_obj.next_page_number request.GET.urlencode %}">
+                        Następna</a>
+                </li>
+            {% endif %}
+        </ul>
     {% endif %}
+    </div>
 {% endblock %}

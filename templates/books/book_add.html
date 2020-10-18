@@ -1,10 +1,14 @@
 {% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+
 {% block title %}Add book{% endblock %}
 
 {% block content %}
+<h3>Formularz dodawania książki</h3>
 <form method="POST">
     {% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="Dodaj książkę do bazy">
+    {{ form|crispy}}
+    <input type="submit" class="btn btn-success" value="Dodaj książkę do bazy">
 </form>
 {% endblock %}

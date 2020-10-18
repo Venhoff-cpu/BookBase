@@ -15,7 +15,12 @@ from .api_procesor import fetch_book_data
 
 
 class LandingPage(TemplateView):
-    template_name = 'book_list.html'
+    template_name = 'index.html'
+
+    def get_context_data(self, **kwargs):
+        ctx = super(LandingPage, self).get_context_data(**kwargs)
+        ctx['book_count'] = Book.objects.all().count() or 0
+        return ctx
 
 
 class BookListView(ListView):
@@ -56,7 +61,7 @@ class BookAddView(FormView):
     form_class = BookAddForm
     fields = '__all__'
     template_name = 'book_add.html'
-    success_url = reverse_lazy('index')
+    success_url = reverse_lazy('book-list')
 
     def form_valid(self, form):
         new_book = Book.objects.create(
@@ -89,7 +94,7 @@ class BookGoogleImportView(FormView):
 
         if not key_word:
             messages.error(self.request, "Słowo kluczowe jest wymagane.")
-            return reverse_lazy('google-api')
+            return reverse_lazy('book-add-google')
 
         q = urllib.parse.quote(key_word)
 
@@ -103,9 +108,10 @@ class BookGoogleImportView(FormView):
 
         if not valid:
             messages.error(self.request, "Zapytanie nie zwróciło żdanych wartości")
-            return reverse_lazy('google-api')
+            return reverse_lazy('book-add-google')
 
-        messages.info(self.request, f"Pobrano {valid} pozycji do bazy danych.")
+        messages.info(self.request, f"Znaleziono {valid} pozycji do bazy danych. "
+                                    f"(Maksymalna ilośc zaimportpowanych książek to 10)")
 
         return redirect('book-list')
 

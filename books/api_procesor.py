@@ -19,7 +19,7 @@ def fetch_book_data(q):
         published_date = book['volumeInfo']['publishedDate'] if 'publishedDate' in book['volumeInfo'] else ''
         page_num = book['volumeInfo']['pageCount'] if 'pageCount' in book['volumeInfo'] else 1
         link_to_cover = book['volumeInfo']['imageLinks']['thumbnail'] if 'imageLinks' in book['volumeInfo'] else ''
-        author= '\n'.join(book['volumeInfo']['authors']) if 'authors' in book['volumeInfo'] else 'Brak autora'
+        author = '\n'.join(book['volumeInfo']['authors']) if 'authors' in book['volumeInfo'] else 'Brak autora'
 
         new_book = Book.objects.get_or_create(
             title=book['volumeInfo']['title'],
@@ -30,6 +30,7 @@ def fetch_book_data(q):
             book_language=book['volumeInfo']['language'],
             link_to_cover=link_to_cover,
         )
+
     book_count = response['totalItems']
 
     return book_count
