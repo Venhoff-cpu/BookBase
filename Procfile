@@ -1,1 +1,2 @@
-web: gunicorn project_folder.wsgi
+release: python3 manage.py migrate
+web: gunicorn project_folder.wsgi --preload --log-file -

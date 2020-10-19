@@ -1,20 +1,27 @@
 import os
+import environ
 from pathlib import Path
-import django_heroku
 
+
+root = environ.Path(__file__) - 3  # get root of the project
+env = environ.Env()
+environ.Env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
+SITE_ROOT = root()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'x0%5bh#art3f5du!=sp1=slx&@o9#at^w#2mr0!(!v5a)i0w1a'
+
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+
+DEBUG = env.bool('DEBUG', default=False)
 
 ALLOWED_HOSTS = ["127.0.0.1", "still-headland-86234.herokuapp.com "]
 
@@ -69,16 +76,7 @@ WSGI_APPLICATION = "project_folder.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'book_db',
-        'HOST': 'localhost',
-        'PASSWORD': 'coderslab',
-        'USER': 'postgres',
-        'PORT': 5432
-    }
-}
+DATABASES = {"default": env.db('DATABASE_URL')}
 
 
 # Password validation
@@ -117,8 +115,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
-PROJECT_ROOT   =   os.path.join(os.path.abspath(__file__))
-STATIC_ROOT  =   os.path.join(PROJECT_ROOT, 'staticfiles')
+PROJECT_ROOT = os.path.join(os.path.abspath(__file__))
+STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
 STATIC_URL = '/static/'
 
 # Extra lookup directories for collectstatic to find static files
@@ -130,7 +128,7 @@ STATICFILES_DIRS = (
 STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 
 # Google API key
-GOOGLE_BOOKS_API_KEY = 'AIzaSyAEvQDlkulKnf_G4qWSguMJqlrPHcOSVgQ'
+GOOGLE_BOOKS_API_KEY = env('GOOGLE_BOOKS_API_KEY')
 
 # REST framework settings
 REST_FRAMEWORK = {
@@ -142,9 +140,9 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.AllowAny",),
 }
 
-import dj_database_url
-prod_db = dj_database_url.config(conn_max_age=500)
-DATABASES['default'].update(prod_db)
+# import dj_database_url
+# prod_db = dj_database_url.config(conn_max_age=500)
+# DATABASES['default'].update(prod_db)
 
 # Activate Django-Heroku.
-django_heroku.settings(locals())
+# django_heroku.settings(locals())

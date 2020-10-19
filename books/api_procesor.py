@@ -3,7 +3,7 @@ import re
 import requests
 
 from .models import Book
-from project_folder.settings import GOOGLE_BOOKS_API_KEY
+from project_folder.settings.base import GOOGLE_BOOKS_API_KEY
 
 APIkey = GOOGLE_BOOKS_API_KEY
 
