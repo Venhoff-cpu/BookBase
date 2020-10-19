@@ -3,8 +3,9 @@ import re
 import requests
 
 from .models import Book
+from project_folder.settings import GOOGLE_BOOKS_API_KEY
 
-APIkey = "AIzaSyAEvQDlkulKnf_G4qWSguMJqlrPHcOSVgQ"
+APIkey = GOOGLE_BOOKS_API_KEY
 
 google_books_url = "https://www.googleapis.com/books/v1/volumes"
 

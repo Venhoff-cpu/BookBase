@@ -294,6 +294,7 @@ fabric.properties
 # SageMath parsed files
 
 # Environments
+.env
 
 # Spyder project settings
 
