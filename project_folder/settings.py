@@ -120,7 +120,7 @@ STATICFILES_DIRS = [
 ]
 
 # Google API key
-GOOGLE_BOOKS_API_KEY = env('GOOGLE_BOOKS_API_KEY')
+GOOGLE_BOOKS_API_KEY = 'AIzaSyAEvQDlkulKnf_G4qWSguMJqlrPHcOSVgQ'
 
 # REST framework settings
 REST_FRAMEWORK = {
