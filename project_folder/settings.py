@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 import environ
+import django_heroku
 
 
 root = environ.Path(__file__) - 3  # get root of the project
@@ -130,3 +131,6 @@ REST_FRAMEWORK = {
     "PAGE_SIZE": 50,
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.AllowAny",),
 }
+
+# Activate Django-Heroku.
+django_heroku.settings(locals())
