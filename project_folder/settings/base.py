@@ -23,7 +23,7 @@ SECRET_KEY = env('SECRET_KEY')
 
 DEBUG = env.bool('DEBUG', default=False)
 
-ALLOWED_HOSTS = ["127.0.0.1", "still-headland-86234.herokuapp.com "]
+ALLOWED_HOSTS = ["127.0.0.1", "still-headland-86234.herokuapp.com"]
 
 
 # Application definition
