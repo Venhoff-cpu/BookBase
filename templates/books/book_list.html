@@ -65,6 +65,10 @@
                 <td>{{ book.book_language }}</td>
                 <td><a href="{% url 'book-edit' pk=book.id %}">Edytuj wpis</a></td>
             </tr>
+        {% empty %}
+            <tr>
+                <td colspan="8">Brak wyników</td>
+            </tr>
         {% endfor %}
         </tbody>
     </table>

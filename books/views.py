@@ -1,6 +1,7 @@
 import urllib.parse
 
 from django.contrib import messages
+from django.contrib.messages.views import SuccessMessageMixin
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import FormView, ListView, TemplateView, UpdateView
@@ -69,7 +70,7 @@ class BookAddView(FormView):
     success_url = reverse_lazy("book-list")
 
     def form_valid(self, form):
-        Book.objects.create(
+        new_book = Book.objects.create(
             author=form.cleaned_data["author"],
             title=form.cleaned_data["title"],
             isbn=form.cleaned_data["isbn"],
@@ -78,14 +79,16 @@ class BookAddView(FormView):
             link_to_cover=form.cleaned_data["link_to_cover"],
             book_language=form.cleaned_data["book_language"],
         )
+        messages.success(self.request, f"Pomyślnie dodano książkę do bazy - {new_book} ")
         return super().form_valid(form)
 
 
-class BookEditView(UpdateView):
+class BookEditView(SuccessMessageMixin, UpdateView):
     template_name = "book_edit.html"
     model = Book
     fields = "__all__"
     success_url = reverse_lazy("index")
+    success_message = "Książka została pomyślnie zaktualizowana."
 
 
 class BookGoogleImportView(FormView):
