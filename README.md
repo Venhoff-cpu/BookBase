@@ -15,16 +15,7 @@ $ pip install -r requirements.txt
 
 ## Konfiguracja 
 
-Projekt używa django-environ.
-W celu konfiguracji usuń z pliku ```.env.sample``` końcówkę sample i uzupełnij plik swojimi danymi.
-```
-DEBUG=True
-SECRET_KEY=your-secret-key
-DATABASE_URL=postgres://user:password@host:port/production_db
-GOOGLE_BOOKS_API_KEY=your-google-books-api-key
-```
-
-W projekcie użyto systemu bazodanowego Postgresql.
+Należy zmienić swoje dane dotyczące bazy danych oraz API.
 
 ## Używanie API
 
