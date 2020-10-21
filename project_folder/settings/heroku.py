@@ -26,7 +26,7 @@ GOOGLE_BOOKS_API_KEY = env('GOOGLE_BOOKS_API_KEY')
 
 PROJECT_ROOT = BASE_DIR
 STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
-STATIC_URL = '/staticfiles/'
+STATIC_URL = '/static/'
 
 # Extra lookup directories for collectstatic to find static files
 STATICFILES_DIRS = (
