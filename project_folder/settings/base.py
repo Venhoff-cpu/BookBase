@@ -115,7 +115,7 @@ USE_TZ = True
 
 PROJECT_ROOT = BASE_DIR
 STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
-STATIC_URL = '/static/'
+STATIC_URL = '/staticfiles/'
 
 # Extra lookup directories for collectstatic to find static files
 STATICFILES_DIRS = (
