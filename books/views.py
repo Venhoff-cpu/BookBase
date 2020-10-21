@@ -6,6 +6,7 @@ from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import FormView, ListView, TemplateView, UpdateView
 from rest_framework.generics import ListAPIView
+from rest_framework.renderers import TemplateHTMLRenderer, BrowsableAPIRenderer, JSONRenderer
 
 from .api_procesor import fetch_book_data
 from .filters import BookApiFilter
@@ -133,3 +134,4 @@ class BookApiListView(ListAPIView):
     serializer_class = BookSerializer
     queryset = Book.objects.all()
     filterset_class = BookApiFilter
+    renderer_classes = [JSONRenderer, BrowsableAPIRenderer]
