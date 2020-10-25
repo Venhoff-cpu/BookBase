@@ -6,7 +6,7 @@ from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import FormView, ListView, TemplateView, UpdateView
 from rest_framework.generics import ListAPIView
-from rest_framework.renderers import TemplateHTMLRenderer, BrowsableAPIRenderer, JSONRenderer
+from rest_framework.renderers import BrowsableAPIRenderer, JSONRenderer
 
 from .api_procesor import fetch_book_data
 from .filters import BookApiFilter
@@ -16,7 +16,7 @@ from .serializers import BookSerializer
 
 
 class LandingPage(TemplateView):
-    template_name = "index.html"
+    template_name = "books_app/index.html"
 
     def get_context_data(self, **kwargs):
         ctx = super(LandingPage, self).get_context_data(**kwargs)
@@ -26,7 +26,7 @@ class LandingPage(TemplateView):
 
 class BookListView(ListView):
     model = Book
-    template_name = "book_list.html"
+    template_name = "books_app/book_list.html"
     paginate_by = 10
 
     def search_args(self):
@@ -67,7 +67,7 @@ class BookListView(ListView):
 class BookAddView(FormView):
     form_class = BookAddForm
     fields = "__all__"
-    template_name = "book_add.html"
+    template_name = "books_app/book_add.html"
     success_url = reverse_lazy("book-list")
 
     def form_valid(self, form):
@@ -85,7 +85,7 @@ class BookAddView(FormView):
 
 
 class BookEditView(SuccessMessageMixin, UpdateView):
-    template_name = "book_edit.html"
+    template_name = "books_app/book_edit.html"
     model = Book
     fields = "__all__"
     success_url = reverse_lazy("index")
@@ -93,7 +93,7 @@ class BookEditView(SuccessMessageMixin, UpdateView):
 
 
 class BookGoogleImportView(FormView):
-    template_name = "book_google_api.html"
+    template_name = "books_app/book_google_api.html"
     form_class = GoogleBooksForm
 
     def form_valid(self, form):
@@ -105,13 +105,13 @@ class BookGoogleImportView(FormView):
             messages.error(self.request, "Słowo kluczowe jest wymagane.")
             return reverse_lazy("book-add-google")
 
-        q = urllib.parse.quote(key_word)
+        q = urllib.parse.quote_plus(key_word)
 
         if in_title:
-            q += f"+intitle:{urllib.parse.quote(in_title)}"
+            q += f"+intitle:{urllib.parse.quote_plus(in_title)}"
 
         if in_author:
-            q += f"+inauthor:{urllib.parse.quote(in_author)}"
+            q += f"+inauthor:{urllib.parse.quote_plus(in_author)}"
 
         valid = fetch_book_data(q)
 

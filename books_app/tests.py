@@ -2,8 +2,8 @@ from django.test import TestCase
 from django.urls import reverse
 from rest_framework.test import APITestCase
 
-from books.forms import BookAddForm, BookSearchForm, GoogleBooksForm
-from books.models import Book
+from books_app.forms import BookAddForm, BookSearchForm, GoogleBooksForm
+from books_app.models import Book
 
 
 def create_book_1():

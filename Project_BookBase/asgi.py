@@ -1,5 +1,5 @@
 """
-ASGI config for project_folder project.
+ASGI config for Project_BookBase project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.asgi import get_asgi_application
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "project_folder.settings.base")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "Project_BookBase.settings.base")
 
 application = get_asgi_application()

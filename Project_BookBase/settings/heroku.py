@@ -4,7 +4,7 @@ Production Settings for Heroku
 import dj_database_url
 import environ
 
-from project_folder.settings.base import *
+from Project_BookBase.settings.base import *
 
 env = environ.Env(
     # set casting, default value
