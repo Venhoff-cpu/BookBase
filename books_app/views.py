@@ -8,7 +8,7 @@ from django.views.generic import FormView, ListView, TemplateView, UpdateView
 from rest_framework.generics import ListAPIView
 from rest_framework.renderers import BrowsableAPIRenderer, JSONRenderer
 
-from .api_procesor import fetch_book_data
+from .api_procesor import fetch_book_data, process_book_data
 from .filters import BookApiFilter
 from .forms import BookAddForm, BookSearchForm, GoogleBooksForm
 from .models import Book
@@ -38,7 +38,8 @@ class BookListView(ListView):
             search_args["book_language__icontains"] = form.cleaned_data[
                 "language"
             ]
-            search_args["publication_date__gte"] = form.cleaned_data[
+            search_args["publication_date__gte"] = \
+                form.cleaned_data[
                 "date_from"
             ]
             search_args["publication_date__lte"] = form.cleaned_data["date_to"]
@@ -113,17 +114,20 @@ class BookGoogleImportView(FormView):
         if in_author:
             q += f"+inauthor:{urllib.parse.quote_plus(in_author)}"
 
-        valid = fetch_book_data(q)
-
-        if not valid:
+        response = fetch_book_data(q)
+        number_of_items = response["totalItems"]
+        if not number_of_items:
             messages.error(
                 self.request, "Zapytanie nie zwróciło żdanych wartości"
             )
             return reverse_lazy("book-add-google")
 
+        book_objs = process_book_data(response)
+        Book.objects.bulk_create(book_objs, ignore_conflicts=True)
+
         messages.info(
             self.request,
-            f"Znaleziono {valid} pozycji do bazy danych. "
+            f"Znaleziono {number_of_items} pozycji do bazy danych. "
             f"(Maksymalna ilośc zaimportpowanych książek to 10)",
         )
 

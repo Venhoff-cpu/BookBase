@@ -4,18 +4,24 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
+import datetime
 
-def current_year():
-    return timezone.now().year
+
+def current_date():
+    return timezone.now().date()
 
 
 future_date = MaxValueValidator(
-    limit_value=current_year(),
+    limit_value=current_date,
     message="Książka nie może być z przyszłości.",
+)
+past_date = MinValueValidator(
+    limit_value=datetime.date(1900, 1, 1),
+    message="Książka nie może mieć daty",
 )
 
 
-def ISBN_validator(raw_isbn):
+def isbn_validator(raw_isbn):
     """ Check string is a valid ISBN number"""
     isbn_to_check = raw_isbn.replace("-", "").replace(" ", "")
 
@@ -43,11 +49,12 @@ class Book(models.Model):
         max_length=200,
         verbose_name=_("title"),
     )
-    publication_date = models.IntegerField(
+    publication_date = models.DateField(
         blank=True,
+        null=True,
         validators=[
-            MinValueValidator(1900),
-            MaxValueValidator(current_year()),
+            past_date,
+            future_date,
         ],
         verbose_name=_("Publication date"),
     )
@@ -57,10 +64,12 @@ class Book(models.Model):
         null=True,
         default=None,
         max_length=256,
-        validators=[ISBN_validator],
+        validators=[isbn_validator],
         verbose_name=_("ISBN"),
     )
     page_num = models.IntegerField(
+        blank=True,
+        null=True,
         validators=[
             MinValueValidator(
                 limit_value=1,
@@ -71,6 +80,7 @@ class Book(models.Model):
     )
     link_to_cover = models.URLField(
         blank=True,
+        null=True,
         verbose_name=_("Link to book cover"),
         help_text="Pełny link zaczynający się od http:// lub https://",
     )

@@ -44,14 +44,14 @@ API obsługuje następujące parametry wyszukiwania:
 reprezentacji danego języka np. Polski - pl, Niemiecki - de itd.
 - ```publication_date__gte``` i ```publication_date__lte``` - przeszukuje bazę pod kontem daty publikacji książki.
 gte oznacza datę po której książka została wydana, a lte, datę przed którą książka została wydana. 
-Dla tych paranmetrów należy podawać tylko rok.
+Dla tych paranmetrów należy podawać date w formacie ```dd.mm.yyyy (01.10.2011)```.
 
 Parametry wyszukiwania łączą się ze sobą. Pozostawienie parametru pustego uznaje się za pominięcie danego kryterium.
 
-Przykład: Chcemy wyszukać książkę o tytule 'Hobbit', autorze: ' Tolkien', języku książki: 'Angielskim', 
+Przykład: Chcemy wyszukać książkę o tytule 'Hobbit', autor: 'Tolkien', języku książki: 'Angielskim', 
 wydanej w latach między 1990, a 2005.
 
 Przy takich założeniach zapytanie do API, będzie wygładało następująco:
 ```python
-url = 'api/book-list/?author=Tolkien&title=Hobbit&book_language=en&publication_date__gte=1990&publication_date__lte=2005'
+url = api/book-list/?author=Tolkien&title=Hobbit&book_language=en&publication_date__gte=01.01.1990&publication_date__lte=31.12.2005
 ```

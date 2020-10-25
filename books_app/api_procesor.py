@@ -1,6 +1,7 @@
 import re
 
 import requests
+import datetime
 
 from .models import Book
 from Project_BookBase.settings.base import GOOGLE_BOOKS_API_KEY
@@ -17,32 +18,37 @@ def fetch_book_data(q):
     else:
         return False
 
+    return response
+
+
+def process_book_data(response):
+    book_objs = []
     for book in response["items"]:
         published_date = (
             book["volumeInfo"]["publishedDate"]
-            if "publishedDate" in book["volumeInfo"]
-            else ""
+            if "publishedDate" in book["volumeInfo"].keys()
+            else None
         )
         page_num = (
             book["volumeInfo"]["pageCount"]
-            if "pageCount" in book["volumeInfo"]
-            else 1
+            if "pageCount" in book["volumeInfo"].keys()
+            else None
         )
         link_to_cover = (
             book["volumeInfo"]["imageLinks"]["thumbnail"]
-            if "imageLinks" in book["volumeInfo"]
-            else ""
+            if "imageLinks" in book["volumeInfo"].keys()
+            else None
         )
         author = (
-            "\n".join(book["volumeInfo"]["authors"])
-            if "authors" in book["volumeInfo"]
+            ", ".join(book["volumeInfo"]["authors"])
+            if "authors" in book["volumeInfo"].keys()
             else ""
         )
         isbn = isbn_check(book["volumeInfo"]["industryIdentifiers"])
         if Book.objects.filter(isbn=isbn) and isbn:
             continue
 
-        Book.objects.get_or_create(
+        obj = Book(
             title=book["volumeInfo"]["title"],
             author=author,
             isbn=isbn_check(book["volumeInfo"]["industryIdentifiers"]),
@@ -52,16 +58,24 @@ def fetch_book_data(q):
             link_to_cover=link_to_cover,
         )
 
-    book_count = response["totalItems"]
+        book_objs.append(obj)
 
-    return book_count
+    return book_objs
 
 
 def publish_date_check(published_date):
     if not published_date:
-        return ""
-    year = re.search(r"\d{4}", published_date)
-    return year.group()
+        return None
+    try:
+        datetime.datetime.strptime(published_date, '%Y-%m-%d')
+        result = published_date
+    except ValueError:
+        if re.search(r"\d{4}-\d{2}", published_date):
+            result = published_date + "-01"
+        else:
+            result = published_date + "-01-01"
+    finally:
+        return result
 
 
 def isbn_check(isbn_list):

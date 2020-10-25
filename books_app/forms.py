@@ -1,3 +1,5 @@
+import datetime
+
 from django import forms
 from django.forms import ModelForm
 from django.utils import timezone
@@ -7,6 +9,10 @@ from .models import Book
 
 
 class BookAddForm(ModelForm):
+    publication_date = forms.DateField(
+        widget=forms.DateInput(attrs={"type": "date"})
+    )
+
     class Meta:
         model = Book
         fields = "__all__"
@@ -31,18 +37,15 @@ class BookSearchForm(forms.Form):
         label="Język książki (skrót)",
         widget=forms.TextInput(attrs={"placeholder": "pl, en, de"}),
     )
-    date_from = forms.IntegerField(
-        min_value=1900,
+    date_from = forms.DateField(
         required=False,
         label="Rok publikacji od:",
-        widget=forms.NumberInput(attrs={"placeholder": "Rok publikacji"}),
+        widget=forms.DateInput(attrs={"placeholder": "Rok publikacji", "type": "date"}),
     )
-    date_to = forms.IntegerField(
-        min_value=1901,
-        max_value=int(timezone.now().year),
+    date_to = forms.DateField(
         required=False,
         label="do",
-        widget=forms.NumberInput(attrs={"placeholder": "Rok publikacji"}),
+        widget=forms.DateInput(attrs={"placeholder": "Rok publikacji", "type": "date"}),
     )
 
     def clean(self):
@@ -50,10 +53,10 @@ class BookSearchForm(forms.Form):
         date_from = cleaned_data.get("date_from")
         date_to = cleaned_data.get("date_to")
         if not date_to:
-            date_to = int(timezone.now().year)
+            date_to = timezone.now().date()
 
         if not date_from:
-            date_from = 1901
+            date_from = datetime.date(1900, 1, 1)
 
         if date_to <= date_from:
             raise forms.ValidationError(
