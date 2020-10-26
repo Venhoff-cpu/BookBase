@@ -3,7 +3,7 @@ import re
 import requests
 import datetime
 
-from .models import Book
+from .models import Book, Author
 from Project_BookBase.settings.base import GOOGLE_BOOKS_API_KEY
 
 APIkey = GOOGLE_BOOKS_API_KEY
@@ -39,26 +39,26 @@ def process_book_data(response):
             if "imageLinks" in book["volumeInfo"].keys()
             else None
         )
-        author = (
-            ", ".join(book["volumeInfo"]["authors"])
-            if "authors" in book["volumeInfo"].keys()
-            else ""
-        )
+        if "authors" in book["volumeInfo"].keys():
+            authors = [author for author in book["volumeInfo"]["authors"]]
+        else:
+            authors = ""
+
         isbn = isbn_check(book["volumeInfo"]["industryIdentifiers"])
         if Book.objects.filter(isbn=isbn) and isbn:
             continue
 
-        obj = Book(
-            title=book["volumeInfo"]["title"],
-            author=author,
-            isbn=isbn_check(book["volumeInfo"]["industryIdentifiers"]),
-            publication_date=publish_date_check(published_date),
-            page_num=page_num,
-            book_language=book["volumeInfo"]["language"],
-            link_to_cover=link_to_cover,
-        )
+        book = {
+            "title": book["volumeInfo"]["title"],
+            "authors": authors,
+            "isbn": isbn_check(book["volumeInfo"]["industryIdentifiers"]),
+            "publication_date": publish_date_check(published_date),
+            "page_num": page_num,
+            "book_language": book["volumeInfo"]["language"],
+            "link_to_cover": link_to_cover,
+        }
 
-        book_objs.append(obj)
+        book_objs.append(book)
 
     return book_objs
 

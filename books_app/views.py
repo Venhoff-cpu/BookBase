@@ -11,7 +11,7 @@ from rest_framework.renderers import BrowsableAPIRenderer, JSONRenderer
 from .api_procesor import fetch_book_data, process_book_data
 from .filters import BookApiFilter
 from .forms import BookAddForm, BookSearchForm, GoogleBooksForm
-from .models import Book
+from .models import Book, Author
 from .serializers import BookSerializer
 
 
@@ -33,15 +33,15 @@ class BookListView(ListView):
         search_args = {}
         form = BookSearchForm(self.request.GET)
         if form.is_valid():
-            search_args["author__icontains"] = form.cleaned_data["author"]
+            search_args["author__name__icontains"] = form.cleaned_data["author"]
             search_args["title__icontains"] = form.cleaned_data["title"]
             search_args["book_language__icontains"] = form.cleaned_data[
                 "language"
             ]
             search_args["publication_date__gte"] = \
                 form.cleaned_data[
-                "date_from"
-            ]
+                    "date_from"
+                ]
             search_args["publication_date__lte"] = form.cleaned_data["date_to"]
 
         else:
@@ -123,7 +123,7 @@ class BookGoogleImportView(FormView):
             return reverse_lazy("book-add-google")
 
         book_objs = process_book_data(response)
-        Book.objects.bulk_create(book_objs, ignore_conflicts=True)
+        self.db_save(book_objs)
 
         messages.info(
             self.request,
@@ -132,6 +132,25 @@ class BookGoogleImportView(FormView):
         )
 
         return redirect("book-list")
+
+    def db_save(self, book_objs):
+        for obj in book_objs:
+            book, created = Book.objects.get_or_create(
+                title=obj["title"],
+                isbn=obj["isbn"],
+                page_num=obj["page_num"],
+                publication_date=obj["publication_date"],
+                book_language=obj["book_language"],
+                link_to_cover=obj["link_to_cover"],
+            )
+            if created:
+                for author in obj["authors"]:
+                    if not author:
+                        continue
+                    author_instance, created = Author.objects.get_or_create(name=author)
+                    book.author.add(author_instance.id)
+            else:
+                continue
 
 
 class BookApiListView(ListAPIView):

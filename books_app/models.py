@@ -28,9 +28,6 @@ def isbn_validator(raw_isbn):
     if not isinstance(isbn_to_check, str):
         raise ValidationError(_("Invalid ISBN: Not a string"))
 
-    if isbn_to_check == "Inny rodzaj identyfikatora":
-        return True
-
     if len(isbn_to_check) != 10 and len(isbn_to_check) != 13:
         raise ValidationError(_("Invalid ISBN: Wrong length"))
 
@@ -40,11 +37,19 @@ def isbn_validator(raw_isbn):
     return True
 
 
-class Book(models.Model):
-    author = models.CharField(
+class Author(models.Model):
+    name = models.CharField(
         max_length=200,
-        verbose_name=_("author"),
+        verbose_name=_("name"),
+        unique=True,
     )
+
+    def __str__(self):
+        return f'{self.name}'
+
+
+class Book(models.Model):
+    author = models.ManyToManyField(Author)
     title = models.CharField(
         max_length=200,
         verbose_name=_("title"),

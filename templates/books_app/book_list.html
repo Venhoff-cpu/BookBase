@@ -57,7 +57,16 @@
         {% for book in book_list %}
             <tr>
                 <td>{{ book.title }}</td>
-                <td>{{ book.author }}</td>
+                <td>
+                    {% for author in book.author.all %}
+                        {% if forloop.last %}
+                        {{ author.name }}
+                        {% else %}
+                        {{ author.name }},
+                        {% endif %}
+                    {% empty %}
+                    {% endfor %}
+                </td>
                 <td>{{ book.isbn }}</td>
                 <td>{{ book.publication_date }}</td>
                 <td>{{ book.page_num }}</td>
