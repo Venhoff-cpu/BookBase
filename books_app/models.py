@@ -17,7 +17,7 @@ future_date = MaxValueValidator(
 )
 past_date = MinValueValidator(
     limit_value=datetime.date(1900, 1, 1),
-    message="Książka nie może mieć daty",
+    message="Zbyt odległa data",
 )
 
 

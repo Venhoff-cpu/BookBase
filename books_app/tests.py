@@ -1,9 +1,12 @@
+import datetime
+import requests
+
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework.test import APITestCase
-
 from books_app.forms import BookAddForm, BookSearchForm, GoogleBooksForm
 from books_app.models import Book
+from Project_BookBase.settings.base import GOOGLE_BOOKS_API_KEY
 
 
 def create_book_1():
@@ -11,7 +14,7 @@ def create_book_1():
         author="J.R.R. Tolkien",
         title="Hobbit",
         isbn=1234567891012,
-        publication_date=2007,
+        publication_date=datetime.date(2007, 1, 1),
         page_num=155,
         link_to_cover="https://getbootstrap.com/",
         book_language="pl",
@@ -23,7 +26,7 @@ def create_book_2():
         author="J.R.R. Tolkien",
         title="Lord of the rings",
         isbn=1234567892222,
-        publication_date=2007,
+        publication_date=datetime.date(2007, 1, 1),
         page_num=155,
         link_to_cover="https://getbootstrap.com/",
         book_language="pl",
@@ -77,7 +80,7 @@ class BookFormAddTest(TestCase):
                 "author": "J.R.R. Tolkien",
                 "title": "Hobbit: tam i z powrotem",
                 "isbn": 1234567891022,
-                "publication_date": 2002,
+                "publication_date": datetime.date(2002, 1, 1),
                 "page_num": 120,
                 "link_to_cover": "https://getbootstrap.com/",
                 "book_language": "pl",
@@ -91,7 +94,7 @@ class BookFormAddTest(TestCase):
             "author": "J.R.R. Tolkien",
             "title": "Hobbit: tam i z powrotem",
             "isbn": 1234567891012,
-            "publication_date": 0,
+            "publication_date": "01.01.1890",
             "page_num": "aaa",
             "link_to_cover": "asss",
             "book_language": "wdawa",
@@ -104,7 +107,7 @@ class BookFormAddTest(TestCase):
         )
         self.assertEqual(
             form.errors["publication_date"][0],
-            "Upewnij się, że ta wartość jest większa lub równa 1900.",
+            "Zbyt odległa data",
         )
         self.assertEqual(form.errors["page_num"][0], "Wpisz liczbę całkowitą.")
         self.assertEqual(
@@ -127,21 +130,13 @@ class BookSearchFormTest(TestCase):
         form_params = {
             "author": "J.R.R. Tolkien",
             "title": "Hobbit",
-            "date_to": 2021,
-            "date_from": 0,
+            "date_to": datetime.date(2020, 12, 31),
+            "date_from": datetime.date(1880, 1, 1),
             "page_num": "aaa",
             "language": "wdawa",
         }
         form = BookSearchForm(form_params)
         self.assertFalse(form.is_valid())
-        self.assertEqual(
-            form.errors["date_to"][0],
-            "Upewnij się, że ta wartość jest mniejsza lub równa 2020.",
-        )
-        self.assertEqual(
-            form.errors["date_from"][0],
-            "Upewnij się, że ta wartość jest większa lub równa 1900.",
-        )
         self.assertEqual(
             form.errors["language"][0],
             "Upewnij się, że ta wartość ma co najwyżej 3 znaki "
@@ -152,8 +147,8 @@ class BookSearchFormTest(TestCase):
         form_params = {
             "author": "J.R.R. Tolkien",
             "title": "Lord",
-            "date_to": 2008,
-            "date_from": 2006,
+            "date_to": datetime.date(2008, 12, 31),
+            "date_from": datetime.date(2006, 1, 1),
             "page_num": 155,
             "language": "pl",
         }
@@ -201,6 +196,16 @@ class BookGoogleApiTest(TestCase):
             "(obecnie ma 51).",
         )
 
+    def test_http_mock_google_api(self):
+        url_google_api = "https://www.googleapis.com/books/v1/volumes"
+        q = "Hobbit"
+        param = {"q": q, "key": GOOGLE_BOOKS_API_KEY}
+        response = requests.get(url_google_api, params=param)
+        self.assertEqual(response.status_code, 200)
+        json_response = response.json()
+        for book in json_response["items"]:
+            self.assertTrue("Hobbit" in book["volumeInfo"]["title"])
+
     def test_get_google_books(self):
         response = self.client.post(self.url, self.form_params)
         self.assertEqual(response.status_code, 302)
@@ -218,7 +223,7 @@ class BookEditTest(TestCase):
         form_params = {
             "author": "J.R.R. Tolkien",
             "title": "Hobbit: Czyli tam i z powrotem",
-            "publication_date": 1999,
+            "publication_date": "01.01.1999",
             "isbn": "1234567891221",
             "page_num": 200,
             "book_language": "en",
@@ -235,7 +240,7 @@ class BookEditTest(TestCase):
 
         self.book.refresh_from_db()
 
-        self.assertEqual(self.book.publication_date, 1999)
+        self.assertEqual(self.book.publication_date, datetime.date(1999, 1, 1))
         self.assertEqual(self.book.isbn, "1234567891221")
         self.assertEqual(self.book.page_num, 200)
         self.assertEqual(self.book.book_language, "en")
@@ -248,7 +253,7 @@ class BookEditTest(TestCase):
             "author": "J.R.R. Tolkien",
             "title": "Hobbit: tam i z powrotem",
             "isbn": 1234567892222,
-            "publication_date": 0,
+            "publication_date": "10.10.1890",
             "page_num": "aaa",
             "link_to_cover": "asss",
             "book_language": "wdawa",
@@ -264,7 +269,7 @@ class BookEditTest(TestCase):
         )
         self.assertEqual(
             form.errors["publication_date"][0],
-            "Upewnij się, że ta wartość jest większa lub równa 1900.",
+            "Zbyt odległa data",
         )
         self.assertEqual(form.errors["page_num"][0], "Wpisz liczbę całkowitą.")
         self.assertEqual(
@@ -299,8 +304,8 @@ class ApiViewTest(APITestCase):
         form_params = {
             "author": "J.R.R. Tolkien",
             "title": "Hobbit",
-            "publication_date__lte": 2008,
-            "publication_date__gte": 2006,
+            "publication_date__lte": datetime.date(2008, 12, 31),
+            "publication_date__gte": datetime.date(2006, 1, 1),
             "language": "pl",
         }
 
@@ -310,6 +315,7 @@ class ApiViewTest(APITestCase):
         data = response.json()
         self.assertEqual(data["count"], 1)
 
-        self.assertEqual(data["results"][0]["publication_date"], 2007)
+        self.assertEqual(data["results"][0]["publication_date"], "2007-01-01")
         self.assertEqual(data["results"][0]["title"], "Hobbit")
         self.assertEqual(data["results"][0]["isbn"], "1234567891012")
+
