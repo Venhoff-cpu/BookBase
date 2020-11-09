@@ -1,9 +1,9 @@
 # BookBase
-Zadanie rekrutacyjne - STX next
 Strona intenetowa napsiana w Django pozwalajaca na dodawania i przeglądanie książek.
 Książki mogą być dodawane bezpośrednio przez aplikację, jak i poprzez Google Books API.
 
 Aplikacja udostępnia server REST API - tylko pobieranie i wyszukiwanie danych.
+Live version: https://still-headland-86234.herokuapp.com/
 
 ## Wymagania
 
